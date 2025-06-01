@@ -5,7 +5,8 @@ FireBaseServer::FireBaseServer() {
 
 int FireBaseServer::begin() {
   if (!beginFlag) {
-    return -1;
+    fbdo.clear();
+    Firebase.reset(&config);
   }
   Serial.println("\nFireBaseServer: begin starting.");
   /* Assign the api key (required) */
@@ -39,13 +40,24 @@ int FireBaseServer::begin() {
 }
 
 void FireBaseServer::update() {
-  // Firebase.ready() should be called repeatedly to handle authentication tasks.
   if (Firebase.ready()) {
-    Firebase.RTDB.setString(&fbdo, "/TAG_ID", TAG_ID);
+    if (Firebase.RTDB.setString(&fbdo, "/TAG_ID", TAG_ID)) {
+      Serial.println("Data sent successfully");
+    } else {
+      Serial.print("Failed to send data: ");
+      Serial.println(fbdo.errorReason());
+    }
+
     delay(500);
-    Firebase.RTDB.getInt(&fbdo, "/Authorized", &Authorized);
-    Serial.print("Access : ");
-    Serial.println(Authorized ? "Authorized" : "Denied");
+
+    if (Firebase.RTDB.getInt(&fbdo, "/Authorized", &Authorized)) {
+      Serial.println("Read successful");
+      Serial.print("Access : ");
+      Serial.println(Authorized ? "Authorized" : "Denied");
+    } else {
+      Serial.print("Failed to read data: ");
+      Serial.println(fbdo.errorReason());
+    }
   }
 }
 

@@ -24,6 +24,7 @@ private:
   Menu* settings;
   Menu* espnow;
   Item* currentMenu;
+  Home* home;
   ActionItem* Avaible_networks;
   ESP32Encoder encoder;
   long newPosition = 0;

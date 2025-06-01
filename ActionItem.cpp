@@ -56,10 +56,11 @@ void ActionItem::display() {
   int y = 20;
   int i = selectedIndex > 4 ? selectedIndex - 4 : 0;
   for (i; i < items.size(); i++) {
+    if(items[i]!= nullptr){
     u8g2_for_adafruit_gfx.setCursor(0, y);
     u8g2_for_adafruit_gfx.print(selectedIndex == i ? "* " : "  ");
     items[i]->draw(u8g2_for_adafruit_gfx, oled, x, y);  // start writing at this position
-
+    }
     // u8g2_for_adafruit_gfx.setFont(selectedIndex == i ? u8g2_font_helvR10_tf : u8g2_font_helvR08_tf);  // apply Adafruit GFX color
     //u8g2_for_adafruit_gfx.println(items[i]);
   }
