@@ -3,7 +3,7 @@
 extern Adafruit_SH1106G& getOLED();  // Get reference to global OLED
 
 Home::Home(Item* parentMenu)
-  : Item("home Page"),parentMenu(parentMenu) {
+  : Item("home Page"), parentMenu(parentMenu) {
 }
 
 
@@ -26,13 +26,28 @@ void Home::display() {
   u8g2_for_adafruit_gfx.setForegroundColor(SH110X_WHITE);  // apply Adafruit GFX color
 
   oled.clearDisplay();
-     oled.drawBitmap(104,0,EmpttyBattery,24,8, 1);
-          oled.drawBitmap(90,0,wifiicon,12,12, 1);
+  oled.drawBitmap(104, 0, EmpttyBattery, 24, 8, 1);
+  oled.drawBitmap(90, 0, wifiicon, 12, 12, 1);
 
- // oled.drawRoundRect(0, 27, 128, 20, 32, SH110X_WHITE);
+  // oled.drawRoundRect(0, 27, 128, 20, 32, SH110X_WHITE);
   u8g2_for_adafruit_gfx.setFont(u8g2_font_6x12_tr);  // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
   u8g2_for_adafruit_gfx.setCursor(0, 8);             // start writing at this position
   u8g2_for_adafruit_gfx.print("home page");
+  
+  int commaIndex = input.indexOf(',');
+  String temp1 = input.substring(0, commaIndex);
+  String temp2 = input.substring(commaIndex + 1);
+
+  float value1 = temp1.toFloat();
+  float value2 = temp2.toFloat();
+  u8g2_for_adafruit_gfx.setFont(u8g2_font_fur20_tr);  // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
+  u8g2_for_adafruit_gfx.setCursor(5, 20);            // start writing at this position
+  u8g2_for_adafruit_gfx.print(value1);
+  u8g2_for_adafruit_gfx.print(" C");
+  u8g2_for_adafruit_gfx.setCursor(50, 40);  // start writing at this position
+  u8g2_for_adafruit_gfx.print(value2);
+  u8g2_for_adafruit_gfx.print(" %");
+
 
 
   oled.display();

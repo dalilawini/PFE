@@ -12,7 +12,7 @@ private:
   Item* parentMenu;
   int selectedIndex = 0;
 U8G2_FOR_ADAFRUIT_GFX u8g2_for_adafruit_gfx;
-
+String input="0.0,0.0";
 
 
 public:
@@ -21,6 +21,8 @@ public:
   void previous() override;
   void next() override;
   Item* getSelectedItem() override;
+  void setID_T_H(String data){input=data;};
+
 
 
 };

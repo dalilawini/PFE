@@ -10,7 +10,9 @@ MenuManager::MenuManager()
 void MenuManager::begin(ESP32Encoder encoder, int ok_Switch) {
   this->encoder = encoder;
   this->ok_Switch = ok_Switch;
-  currentMenu = new Home(this);
+  
+  home = new Home(this);
+  currentMenu=home;
   espnow = new Menu("ESP-NOW", ESPNOW);
   espnow->addItem(new Menu(" <-- "));
   addItem(espnow);
@@ -75,6 +77,7 @@ void MenuManager::espNowUpdate(std::vector<EspNow*> devices) {
 
   for (int i = 0; i < devices.size(); i++) {
     EspNow* dev = devices[i];
+    if(dev!= nullptr){
     ActionItem* Device = new ActionItem(dev->getName());
     Device->addItem(new Label("charge", dev->getCharge() + "%"));
     Device->addItem(new Label("Status", dev->getStatus()));
@@ -82,7 +85,13 @@ void MenuManager::espNowUpdate(std::vector<EspNow*> devices) {
     Device->addItem(new Label("Mac", dev->getMAC()));
     Device->addItem(new Label(" <-- ",""));
     espnow->addItem(Device);
+    if(dev->getName()=="ClimaTrack"){
+      home->setID_T_H(dev->getID());
+      Serial.println(dev->getID());
+    }
+    }
   }
+
   espnow->addItem(new Menu(" <-- "));
 }
 

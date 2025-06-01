@@ -9,8 +9,6 @@
 #include "esp_wifi.h"
 #include "FireBaseServer.h"
 
-#define WIFI_SSID "MedAli"
-#define WIFI_PASSWORD "1234567891"
 enum Mode { WIFI_,
             ESPNOW_ };
 Mode currentMode;
@@ -36,16 +34,19 @@ MenuManager menuManager;
 std::vector<EspNow*> devices;
 FireBaseServer fireBaseServer;
 volatile bool shouldSwitchToWiFi = false;
+
 String newMAC = "";
 
 void OnDataRecv(const esp_now_recv_info_t* recv_info, const uint8_t* data, int data_len) {
   Serial.println("Data received via ESP-NOW");
   EspNow* device = new EspNow(data, recv_info);
+    shouldSwitchToWiFi = device->getName() == "RFID Device" ? true : false;
+    
   bool exists = false;
   newMAC = device->getMAC();
 
   for (EspNow* dev : devices) {
-    if (dev->getMAC() == newMAC) {
+    if (dev != nullptr && dev->getMAC() == newMAC) {
       dev->update(data);
       Serial.println("EspNow:(update) " + dev->toString());
       exists = true;
@@ -54,12 +55,16 @@ void OnDataRecv(const esp_now_recv_info_t* recv_info, const uint8_t* data, int d
   }
   if (!exists) {
     Serial.println("EspNow: (create) " + device->toString());
-    devices.push_back(device);
+    if (device != nullptr) {
+      devices.push_back(device);
+    }
   } else {
-    delete device;
+    if (device != nullptr) {
+      delete device;
+      device = nullptr;
+    }
   }
   menuManager.espNowUpdate(devices);
-  shouldSwitchToWiFi = true;
 }
 
 void setup() {
@@ -99,6 +104,7 @@ void loop() {
   if (shouldSwitchToWiFi) {
     switchMode(WIFI_);
     if (currentMode == WIFI_ && WiFi.status() == WL_CONNECTED) {
+      fireBaseServer.SetReconnect(false);
       fireBaseServer.begin();
       for (EspNow* dev : devices) {
         if (dev->getName() == "RFID Device") {
@@ -107,7 +113,6 @@ void loop() {
         }
       }
       Serial.print("fireBaseServer: " + fireBaseServer.toString());
-      delay(500);
     } else {
       Serial.print("fireBaseServer: no internet to connection");
     }
